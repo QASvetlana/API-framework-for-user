@@ -3,6 +3,7 @@ package lib;
 import io.restassured.response.Response;
 
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // все проверки вынесли в отдельный класс
@@ -16,6 +17,17 @@ public class Assertions {
         // сравниваем ожидаемое значение и от сервера
         assertEquals(expectedValue, value, "JSON value is not equal to expected value");
     }
+
+    public static void assertJsonByName(Response Response, String name, String expectedValue) {
+        // на вход получаем ответ сервера и вытягиваем из него текст
+        Response.then().assertThat().body("$", hasKey(name));
+
+        // получем имя
+        String value = Response.jsonPath().getString(name);
+        // сравниваем ожидаемое значение и от сервера
+        assertEquals(expectedValue, value, "JSON value is not equal to expected value");
+    }
+
     // сравниваем текст ответа
     public static void assertResponseTextEquals(Response Response, String expectedAnswer) {
         assertEquals(
@@ -24,6 +36,7 @@ public class Assertions {
                 "Response text is not as expected"
         );
     }
+
     // сравниваем код ответа
     public static void assertResponseCodeEquals(Response Response, int expectedStatusCode) {
         assertEquals(
@@ -33,7 +46,21 @@ public class Assertions {
         );
     }
 
-    public static void assertJsonHasKey(Response Response, String expectedFieldName) {
+    public static void assertJsonHasField(Response Response, String expectedFieldName) {
         Response.then().assertThat().body("$", hasKey(expectedFieldName));
     }
+
+    // проверяем, что все поля имеют значения через цикл for
+    public static void assertJsonHasFields(Response Response, String[] expectedFieldNames) {
+        for (String expectedFieldName : expectedFieldNames) {
+            Assertions.assertJsonHasField(Response, expectedFieldName);
+        }
+    }
+
+    public static void assertJsonHasNotField(Response Response, String unexpectedFieldName) {
+        Response.then().assertThat().body("$", not(hasKey(unexpectedFieldName)));
+    }
+
+
 }
+
