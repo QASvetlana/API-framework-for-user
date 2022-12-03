@@ -48,4 +48,40 @@ public class ApiCoreRequests {
                 .andReturn();
     }
 
+    @Step("Make a POST-request with incorrect email")
+    public Response makePostRequestCreateUserWithIncorrectEmail(String url, Map<String, String> userData) {
+        return given()
+                .filter(new AllureRestAssured())
+                .body(userData)
+                .post(url)
+                .andReturn();
+    }
+
+    @Step("Make a POST-request with short name")
+    public Response makePostRequestCreateUserWithShortName(String url, Map<String, String> userData) {
+        return given()
+                .filter(new AllureRestAssured())
+                .body(userData)
+                .post(url)
+                .andReturn();
+    }
+
+    @Step("Make a POST-request with long name")
+    public Response makePostRequestCreateUserWithLongName(String url, Map<String, String> userData) {
+        return given()
+                .filter(new AllureRestAssured())
+                .body(userData)
+                .post(url)
+                .andReturn();
+    }
+
+    @Step("Make a POST-request with empty field")
+    public Response makePostRequestCreateUserRequiredEmptyField(String url, Map<String, String> userData) {
+        return given()
+                .filter(new AllureRestAssured())
+                .body(userData)
+                .post(url)
+                .andReturn();
+    }
+
 }
