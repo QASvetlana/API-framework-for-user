@@ -45,4 +45,22 @@ public class UserRegisterTest extends BaseTestCase {
         Assertions.assertResponseCodeEquals(responseCreateAuth, 200);
         Assertions.assertJsonHasField(responseCreateAuth, "id");
     }
+
+    @Test
+    public void testCreateUserWithIncorrectEmail() {
+        String email = "vinkotovexample.com";
+
+        Map<String, String> userData = new HashMap<>();
+        userData.put("email", email);
+        userData = DataGenerator.getRegistrationData(userData);
+
+        Response responseCreateAuth = RestAssured
+                .given()
+                .body(userData)
+                .post("https://playground.learnqa.ru/api/user")
+                .andReturn();
+
+        Assertions.assertResponseCodeEquals(responseCreateAuth, 400);
+        Assertions.assertResponseTextEquals(responseCreateAuth, "Invalid email format");
+    }
 }
