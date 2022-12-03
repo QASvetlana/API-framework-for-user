@@ -64,11 +64,11 @@ public class UserRegisterTest extends BaseTestCase {
     }
 
     @Test
-    public void testCreateUserWithoutOneRequiredField() {
-        String email = "vinkotovexample.com";
+    public void testCreateUserWithShortName() {
+        String username = "t";
 
         Map<String, String> userData = new HashMap<>();
-        userData.put("email", email);
+        userData.put("username", username);
         userData = DataGenerator.getRegistrationData(userData);
 
         Response responseCreateAuth = RestAssured
@@ -78,6 +78,6 @@ public class UserRegisterTest extends BaseTestCase {
                 .andReturn();
 
         Assertions.assertResponseCodeEquals(responseCreateAuth, 400);
-        Assertions.assertResponseTextEquals(responseCreateAuth, "Invalid email format");
+        Assertions.assertResponseTextEquals(responseCreateAuth, "The value of 'username' field is too short");
     }
 }
