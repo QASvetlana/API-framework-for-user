@@ -11,6 +11,14 @@ import static io.restassured.RestAssured.given;
 
 // вынесли запросы в отдельный класс, чтобы не перегружать тесты степами
 public class ApiCoreRequests {
+    @Step("Make a GET-request without auth cookie and token")
+    public Response makeGetRequestWithoutCookieAndToken(String url) {
+        return given()
+                .filter(new AllureRestAssured())
+                .get(url)
+                .andReturn();
+    }
+
     @Step("Make a GET-request with token and auth cookie")
     public Response makeGetRequest(String url, String token, String cookie) {
         return given()
@@ -83,5 +91,6 @@ public class ApiCoreRequests {
                 .post(url)
                 .andReturn();
     }
+
 
 }

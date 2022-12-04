@@ -4,7 +4,6 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import org.junit.jupiter.api.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lib.ApiCoreRequests;
 import lib.Assertions;
@@ -23,6 +22,8 @@ public class UserRegisterTest extends BaseTestCase {
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
 
     @Test
+    @Description("Creating a user with existing email impossible")
+    @DisplayName("Test negative register user")
     public void testCreateUserWithExistingEmail() {
         String email = "vinkotov@example.com";
 
@@ -30,26 +31,23 @@ public class UserRegisterTest extends BaseTestCase {
         userData.put("email", email);
         userData = DataGenerator.getRegistrationData(userData);
 
-        Response responseCreateAuth = RestAssured
-                .given()
-                .body(userData)
-                .post("https://playground.learnqa.ru/api/user")
-                .andReturn();
+        Response responseCreateAuth = apiCoreRequests
+                .makePostRequestCreateUserWithIncorrectEmail("https://playground.learnqa.ru/api/user", userData);
+
 
         Assertions.assertResponseCodeEquals(responseCreateAuth, 400);
         Assertions.assertResponseTextEquals(responseCreateAuth, "Users with email '" + email + "' already exists");
     }
 
     @Test
+    @Description("Creating a user successfully")
+    @DisplayName("Test positive register user")
     public void testCreateUserSuccessfully() {
 
         Map<String, String> userData = DataGenerator.getRegistrationData();
 
-        Response responseCreateAuth = RestAssured
-                .given()
-                .body(userData)
-                .post("https://playground.learnqa.ru/api/user")
-                .andReturn();
+        Response responseCreateAuth = apiCoreRequests
+                .makePostRequestCreateUserWithIncorrectEmail("https://playground.learnqa.ru/api/user", userData);
 
         Assertions.assertResponseCodeEquals(responseCreateAuth, 200);
         Assertions.assertJsonHasField(responseCreateAuth, "id");
@@ -73,6 +71,8 @@ public class UserRegisterTest extends BaseTestCase {
     }
 
     @Test
+    @Description("Creating a user with short name is not possible")
+    @DisplayName("Test negative register user")
     public void testCreateUserWithShortName() {
         String username = "t";
 
