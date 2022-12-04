@@ -60,7 +60,14 @@ public class Assertions {
     public static void assertJsonHasNotField(Response Response, String unexpectedFieldName) {
         Response.then().assertThat().body("$", not(hasKey(unexpectedFieldName)));
     }
-
+    // сравниваем текст ответа
+    public static void assertResponseTextEqualsForUserNotFound(Response Response, String expectedAnswer) {
+        assertEquals(
+                expectedAnswer,
+                Response.asString(),
+                "User not found"
+        );
+    }
 
 }
 

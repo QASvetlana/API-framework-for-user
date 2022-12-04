@@ -48,7 +48,37 @@ public class UserGetTest extends BaseTestCase {
                 .andReturn();
 
         // проверяем наличие нужных нам полей в ответе
-        String[] expectedFields = {"username", "firstName", "lastName", "email"};
+        //   String[] expectedFields = {"username", "firstName", "lastName", "email"};
         Assertions.assertJsonHasField(responseUserData, "email");
+    }
+
+    @Test
+    public void testGetUserDetailsAuthAsAnotherUser() {
+        Map<String, String> authData = new HashMap<>();
+        //определили почту и пароль
+        authData.put("email", "vinkotov@example.com");
+        authData.put("password", "1234");
+
+        // залогинились
+        Response responseGetAuth = RestAssured
+                .given()
+                .body(authData)
+                .post("https://playground.learnqa.ru/api/user/login")
+                .andReturn();
+
+        // вынимаем из полученного запроса хедер и куки
+        String header = this.getHeader(responseGetAuth, "x-csrf-token");
+        String cookie = this.getCookie(responseGetAuth, "auth_sid");
+        // полученные куки и хедер подставляем в запрос, чтобы пользователь был авторизован
+        Response responseUserData = RestAssured
+                .given()
+                .header("x-csrf-token", header)
+                .cookie("auth_sid", cookie)
+                .get("https://playground.learnqa.ru/api/user/3")
+                .andReturn();
+
+        // проверяем наличие нужных нам полей в ответе
+        //   String[] expectedFields = {"username", "firstName", "lastName", "email"};
+        Assertions.assertResponseTextEqualsForUserNotFound(responseUserData, "User not found");
     }
 }
