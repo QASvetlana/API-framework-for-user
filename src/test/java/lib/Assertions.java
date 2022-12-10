@@ -68,6 +68,14 @@ public class Assertions {
                 "User not found"
         );
     }
+    // сравниваем текст ответа
+    public static void assertResponseTextNotEquals(Response Response, String expectedAnswer) {
+        assertEquals(
+                expectedAnswer,
+                Response.asString(),
+                "Auth token not supplied"
+        );
+    }
 
 }
 

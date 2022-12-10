@@ -16,9 +16,9 @@ public class UserEditTest extends BaseTestCase {
     // создаем пользователя
     // редактируем пользователя
     // проверяем, что успешно его отредактировали с помощью метода получения данных о пользователе
-    // комплексный тест: 1. создание пользователя. 2. авторизация. 3. редактирование. 4. полуение данных
+    // комплексный тест: 1. создание пользователя. 2. авторизация. 3. редактирование. 4. получение данных
     public void testEditJustCreatedTest() {
-//GENERATE USER
+    //GENERATE USER
         Map<String, String> userData = DataGenerator.getRegistrationData();
 
         JsonPath responseCreateAuth = RestAssured
@@ -26,7 +26,7 @@ public class UserEditTest extends BaseTestCase {
                 .body(userData)
                 .post("https://playground.learnqa.ru/api/user/")
                 .jsonPath();
-// в переменную сохраняем ид пользователя, чтобы дальше с ним работать
+    // в переменную сохраняем ид пользователя, чтобы дальше с ним работать
         String userId = responseCreateAuth.getString("id");
 
         //LOGIN
@@ -63,5 +63,21 @@ public class UserEditTest extends BaseTestCase {
                 .andReturn();
 
         Assertions.assertJsonByName(responseUserData, "firstName", newName);
+    }
+    @Test
+
+    public void changeUserDataBeingUnauthorizedTest() {
+        String newName = "Changed Name";
+        Map<String, String> editData = new HashMap<>();
+        editData.put("firstName", newName);
+
+        Response responseEditUser = RestAssured
+                .given()
+                .body(editData)
+                .put("https://playground.learnqa.ru/api/user/")
+                .andReturn();
+        Assertions.assertResponseTextNotEquals(responseEditUser, "Auth token not supplied");
+
+
     }
 }
