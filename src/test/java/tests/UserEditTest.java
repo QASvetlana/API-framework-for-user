@@ -81,11 +81,9 @@ public class UserEditTest extends BaseTestCase {
 
     }
     @Test
-    // создаем первого пользователя
-
     public void EditBeingAuthorizedWithAnotherUserTest() {
+        // создаем первого пользователя
         Map<String, String> userData = DataGenerator.getRegistrationData();
-
         JsonPath responseCreateAuth = RestAssured
                 .given()
                 .body(userData)
@@ -93,15 +91,14 @@ public class UserEditTest extends BaseTestCase {
                 .jsonPath();
         String userId = responseCreateAuth.getString("id");
 
-        Map<String, String> userData2 = DataGenerator.getRegistrationData();
-
         // создаем второго пользователя
+        Map<String, String> userData2 = DataGenerator.getRegistrationData();
         JsonPath responseCreateAuth2 = RestAssured
                 .given()
                 .body(userData2)
                 .post("https://playground.learnqa.ru/api/user/")
                 .jsonPath();
-        String userId2 = responseCreateAuth.getString("id");
+        String userId2 = responseCreateAuth2.getString("id");
 
         // авторизация первым пользователем
         Map<String, String> authData = new HashMap<>();
@@ -124,17 +121,21 @@ public class UserEditTest extends BaseTestCase {
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
                 .body(editData)
-                .put("https://playground.learnqa.ru/api/user/" + userId2)
-                .andReturn();
+                .put("https://playground.learnqa.ru/api/user/" + userId2);
 
         // проверяем, что не смогли отредактировать данные второго пользователя, будучи авторизованными первым
         Response responseUserData = RestAssured
                 .given()
+                .log()
+                .all()
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                .get("https://playground.learnqa.ru/api/user/" + userId2)
-                .andReturn();
+                .get("https://playground.learnqa.ru/api/user/" + userId2);
+        responseUserData.prettyPrint();
 
-          Assertions.assertJsonByName(responseUserData, "firstName", newName);
+          Assertions.assertJsonByNameWithDifferentAuth(responseUserData,
+                  "{\n" +
+                          "    \"username\": \"learnqa\"\n" +
+                          "}");
     }
 }

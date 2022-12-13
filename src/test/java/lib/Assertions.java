@@ -22,7 +22,7 @@ public class Assertions {
         // на вход получаем ответ сервера и вытягиваем из него текст
         Response.then().assertThat().body("$", hasKey(name));
 
-        // получем имя
+        // получим имя
         String value = Response.jsonPath().getString(name);
         // сравниваем ожидаемое значение и от сервера
         assertEquals(expectedValue, value, "JSON value is not equal to expected value");
@@ -75,6 +75,11 @@ public class Assertions {
                 Response.asString(),
                 "Auth token not supplied"
         );
+    }
+    public static void assertJsonByNameWithDifferentAuth(Response Response, String expectedAnswer) {
+        assertEquals(expectedAnswer,
+                Response.asString(),
+                "\"username\": \"learnqa\"");
     }
 
 }
