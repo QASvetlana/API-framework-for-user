@@ -18,7 +18,7 @@ public class UserEditTest extends BaseTestCase {
     // проверяем, что успешно его отредактировали с помощью метода получения данных о пользователе
     // комплексный тест: 1. создание пользователя. 2. авторизация. 3. редактирование. 4. получение данных
     public void testEditJustCreatedTest() {
-    //GENERATE USER
+        //GENERATE USER
         Map<String, String> userData = DataGenerator.getRegistrationData();
 
         JsonPath responseCreateAuth = RestAssured
@@ -26,7 +26,7 @@ public class UserEditTest extends BaseTestCase {
                 .body(userData)
                 .post("https://playground.learnqa.ru/api/user/")
                 .jsonPath();
-    // в переменную сохраняем ид пользователя, чтобы дальше с ним работать
+        // в переменную сохраняем ид пользователя, чтобы дальше с ним работать
         String userId = responseCreateAuth.getString("id");
 
         //LOGIN
@@ -64,6 +64,7 @@ public class UserEditTest extends BaseTestCase {
 
         Assertions.assertJsonByName(responseUserData, "firstName", newName);
     }
+
     @Test
 
     public void changeUserDataBeingUnauthorizedTest() {
@@ -80,6 +81,7 @@ public class UserEditTest extends BaseTestCase {
 
 
     }
+
     @Test
     public void EditBeingAuthorizedWithAnotherUserTest() {
         // создаем первого пользователя
@@ -114,28 +116,63 @@ public class UserEditTest extends BaseTestCase {
         // редактируем второго пользователя
         String newName = "Changed Name2";
         Map<String, String> editData = new HashMap<>();
-        editData.put("firstName", newName);
+        editData.put("username", newName);
 
         Response responseEditUser = RestAssured
                 .given()
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
                 .body(editData)
-                .put("https://playground.learnqa.ru/api/user/" + userId2);
+                .put("https://playground.learnqa.ru/api/user/" + userId2)
+                .andReturn();
 
         // проверяем, что не смогли отредактировать данные второго пользователя, будучи авторизованными первым
         Response responseUserData = RestAssured
                 .given()
-                .log()
-                .all()
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
                 .get("https://playground.learnqa.ru/api/user/" + userId2);
-        responseUserData.prettyPrint();
 
-          Assertions.assertJsonByNameWithDifferentAuth(responseUserData,
-                  "{\n" +
-                          "    \"username\": \"learnqa\"\n" +
-                          "}");
+        Assertions.assertJsonByName(responseUserData, "username", "learnqa");
+
+    }
+
+    @Test
+
+    public void editEmailBeingAuthoriseTest() {
+        Map<String, String> userData = DataGenerator.getRegistrationData();
+        userData.put("email", "q@example.com");
+        userData.put("password", "1234");
+
+        JsonPath responseCreateAuth = RestAssured
+                .given()
+                .body(userData)
+                .post("https://playground.learnqa.ru/api/user/")
+                .jsonPath();
+
+        Map<String, String> authData = new HashMap<>();
+
+        authData.put("email", "q@example.com");
+        authData.put("password", "1234");
+
+        Response responseGetAuth = RestAssured
+                .given()
+                .body(authData)
+                .post("https://playground.learnqa.ru/api/user/login")
+                .andReturn();
+
+        String newEmail = "qexample.com";
+        Map<String, String> editData = new HashMap<>();
+        editData.put("email", newEmail);
+
+        Response responseEditUser = RestAssured
+                .given()
+                .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
+                .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
+                .body(editData)
+                .put("https://playground.learnqa.ru/api/user/")
+                .andReturn();
+
+        Assertions.assertResponseJsonTextEquals(responseEditUser, "Invalid email format");
     }
 }

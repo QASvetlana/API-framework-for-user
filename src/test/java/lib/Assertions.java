@@ -60,6 +60,7 @@ public class Assertions {
     public static void assertJsonHasNotField(Response Response, String unexpectedFieldName) {
         Response.then().assertThat().body("$", not(hasKey(unexpectedFieldName)));
     }
+
     // сравниваем текст ответа
     public static void assertResponseTextEqualsForUserNotFound(Response Response, String expectedAnswer) {
         assertEquals(
@@ -68,6 +69,7 @@ public class Assertions {
                 "User not found"
         );
     }
+
     // сравниваем текст ответа
     public static void assertResponseTextNotEquals(Response Response, String expectedAnswer) {
         assertEquals(
@@ -76,11 +78,15 @@ public class Assertions {
                 "Auth token not supplied"
         );
     }
-    public static void assertJsonByNameWithDifferentAuth(Response Response, String expectedAnswer) {
-        assertEquals(expectedAnswer,
+    // сравниваем текст ответа
+    public static void assertResponseJsonTextEquals(Response Response, String expectedAnswer) {
+        assertEquals(
+                expectedAnswer,
                 Response.asString(),
-                "\"username\": \"learnqa\"");
+                "Invalid email format"
+        );
     }
 
 }
+
 
