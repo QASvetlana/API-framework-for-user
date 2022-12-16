@@ -87,6 +87,14 @@ public class Assertions {
                 "Invalid email format"
         );
     }
+
+    public static void assertResponseUserNotFound(Response Response, String expectedAnswer) {
+        assertEquals(
+                expectedAnswer,
+                Response.asString(),
+                "Auth token not supplied"
+        );
+    }
 }
 
 

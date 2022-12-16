@@ -121,6 +121,7 @@ public class ApiCoreRequests {
                 .get(url + userId)
                 .andReturn();
     }
+
     @Step("Make a PUT-request Edit user being unauthorized")
     public Response makePutRequestCreateUserBeingUnauthorized(String url, Map<String, String> editData) {
         return given()
@@ -137,6 +138,17 @@ public class ApiCoreRequests {
                 .body(editData)
                 .put(url)
                 .andReturn();
+    }
+
+    @Step("Make a Delete-request for user")
+    public Response makeDeleteRequestUser(String url, String userId, String token, String cookie) {
+        return given()
+                .header("x-csrf-token", token)
+                .cookie("auth_sid", cookie)
+                .delete(url + userId)
+                .andReturn();
+
+
     }
 }
 
