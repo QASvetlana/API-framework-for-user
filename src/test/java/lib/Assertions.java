@@ -78,6 +78,7 @@ public class Assertions {
                 "Auth token not supplied"
         );
     }
+
     // сравниваем текст ответа
     public static void assertResponseJsonTextEquals(Response Response, String expectedAnswer) {
         assertEquals(
@@ -86,7 +87,6 @@ public class Assertions {
                 "Invalid email format"
         );
     }
-
 }
 
 
